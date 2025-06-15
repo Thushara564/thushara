@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Kilinochchi Rooms Booking</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background-color: #f0f0f0;
+      padding: 20px;
+    }
+    h1 {
+      text-align: center;
+      color: #2c3e50;
+    }
+    .room-buttons {
+      text-align: center;
+      margin-bottom: 20px;
+    }
+    .room-buttons button {
+      margin: 5px;
+      padding: 10px 20px;
+      font-size: 16px;
+    }
+    .room-details {
+      display: none;
+      background-color: #fff;
+      padding: 20px;
+      border-radius: 10px;
+      box-shadow: 0 0 10px rgba(0,0,0,0.1);
+      margin-bottom: 20px;
+    }
+    .images {
+      display: flex;
+      justify-content: space-around;
+      margin-top: 15px;
+    }
+    .images img {
+      width: 30%;
+      border-radius: 10px;
+    }
+    .info {
+      margin-top: 15px;
+      font-size: 16px;
+    }
+    .booking-form {
+      text-align: center;
+      background-color: #fff;
+      padding: 20px;
+      border-radius: 10px;
+      box-shadow: 0 0 10px rgba(0,0,0,0.1);
+    }
+    .booking-form input, .booking-form button {
+      margin: 10px;
+      padding: 10px;
+      font-size: 16px;
+    }
+    #calendar-display {
+      margin-top: 20px;
+      background: #fff;
+      padding: 20px;
+      border-radius: 10px;
+      box-shadow: 0 0 10px rgba(0,0,0,0.1);
+    }
+  </style>
+</head>
+<body>
+  <h1>Kilinochchi Rooms Booking</h1>
+  <div class="room-buttons">
+    <button onclick="showRoom(1)">Room 1</button>
+    <button onclick="showRoom(2)">Room 2</button>
+    <button onclick="showRoom(3)">Room 3</button>
+    <button onclick="showRoom(4)">Room 4</button>
+    <button onclick="showRoom(5)">Room 5</button>
+  </div>
+
+  <!-- Room details section -->
+  <div id="room-details" class="room-details">
+    <h2 id="room-title">Room</h2>
+    <div class="images">
+      <img id="img-left" src="room1a.jpg" alt="Room Left">
+      <img id="img-center" src="room1b.jpg" alt="Room Center">
+      <img id="img-right" src="room1c.jpg" alt="Room Right">
+    </div>
+    <div class="info">
+      Beds: <span id="beds">2</span> | Bathrooms: <span id="baths">1</span>
+    </div>
+  </div>
+
+  <!-- Booking form -->
+  <div class="booking-form">
+    <input type="text" id="guestName" placeholder="Guest Name">
+    <input type="text" id="phoneNumber" placeholder="Phone Number"><br>
+    From: <input type="date" id="dateFrom">
+    To: <input type="date" id="dateTo"><br>
+    <button style="font-size: 18px; padding: 10px 25px;" onclick="bookRoom()">Book Now</button>
+  </div>
+
+  <!-- Calendar display -->
+  <div id="calendar-display">
+    <h3>Room Booking Calendar</h3>
+    <div id="booking-info">No bookings yet.</div>
+  </div>
+
+  <script>
+    let bookings = {};
+    let currentRoom = 1;
+
+    function showRoom(roomNum) {
+      currentRoom = roomNum;
+      document.getElementById('room-details').style.display = 'block';
+      document.getElementById('room-title').textContent = `Room ${roomNum}`;
+      document.getElementById('img-left').src = `room${roomNum}a.jpg`;
+      document.getElementById('img-center').src = `room${roomNum}b.jpg`;
+      document.getElementById('img-right').src = `room${roomNum}c.jpg`;
+
+      // Example data, adjust for each room
+      document.getElementById('beds').textContent = roomNum % 2 === 0 ? '1' : '2';
+      document.getElementById('baths').textContent = '1';
+      updateCalendar();
+    }
+
+    function bookRoom() {
+      const name = document.getElementById('guestName').value.trim();
+      const phone = document.getElementById('phoneNumber').value.trim();
+      const from = document.getElementById('dateFrom').value;
+      const to = document.getElementById('dateTo').value;
+      if (!name || !phone || !from || !to) {
+        alert('Please fill all booking details.');
+        return;
+      }
+
+      if (!bookings[currentRoom]) bookings[currentRoom] = [];
+      const roomBookings = bookings[currentRoom];
+
+      const conflict = roomBookings.some(b => !(new Date(to) < new Date(b.from) || new Date(from) > new Date(b.to)));
+      if (conflict) {
+        alert('This room is already booked during selected dates.');
+        return;
+      }
+
+      roomBookings.push({ name, phone, from, to });
+      updateCalendar();
+      alert('Room booked successfully!');
+    }
+
+    function updateCalendar() {
+      const roomBookings = bookings[currentRoom] || [];
+      let html = roomBookings.length === 0 ? 'No bookings yet.' : '';
+      for (const b of roomBookings) {
+        html += `<p><strong>${b.name}</strong> - ${b.from} to ${b.to}</p>`;
+      }
+      document.getElementById('booking-info').innerHTML = html;
+    }
+  </script>
+</body>
+</html>
